@@ -1,5 +1,5 @@
-const CLIENT_ID = "652abd1d8cef499b9211d6a9a3c7adaa"; // Replace with your actual client ID
-const REDIRECT_URI = "https://echozy.netlify.app/callback"; // Must match the registered one
+const CLIENT_ID = "652abd1d8cef499b9211d6a9a3c7adaa";
+const REDIRECT_URI = "https://echozy.netlify.app/callback";
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const RESPONSE_TYPE = "token";
 const SCOPES = [

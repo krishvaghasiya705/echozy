@@ -1,3 +1,25 @@
 $primary-color: #1db954;
 $background-color: #121212;
 $text-color: #fff;
+
+// Secondary colors
+$secondary-color: #535353;
+$light-gray: #b3b3b3;
+$darker-gray: #282828;
+$nav-black: #040404;
+
+// Interactive states
+$hover-color: #1ed760;
+$active-color: #169c46;
+$disabled-color: #535353;
+
+// Gradients
+$black-gradient: linear-gradient(180deg, #404040 0%, #282828 100%);
+$green-gradient: linear-gradient(90deg, #1db954 0%, #169c46 100%);
+
+// Additional UI colors
+$error-color: #e91429;
+$warning-color: #ffa42b;
+$success-color: #1db954;
+$overlay-color: rgba(0, 0, 0, 0.7);
+$border-color: #333333;

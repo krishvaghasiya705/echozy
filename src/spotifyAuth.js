@@ -1,5 +1,6 @@
 const CLIENT_ID = "652abd1d8cef499b9211d6a9a3c7adaa";
-const REDIRECT_URI = "http://localhost:3000/callback";
+// const REDIRECT_URI = "http://localhost:3000/callback";
+const REDIRECT_URI = "https://echozy.netlify.app/callback";
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const RESPONSE_TYPE = "token";
 const SCOPES = [

@@ -1,12 +1,21 @@
+import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
-import './App.css';
+import { configureStore } from '@reduxjs/toolkit';
+import playerReducer from './store/playerSlice';
 import router from './module/routes/route';
 import "./styles/global.scss";
 
-function App() {
+const store = configureStore({
+  reducer: {
+    player: playerReducer,
+  },
+});
 
+function App() {
   return (
-    <RouterProvider router={router} />
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
 }
 

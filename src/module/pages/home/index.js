@@ -8,8 +8,6 @@ const Home = ({ token }) => {
   const [topTracks, setTopTracks] = useState([]);
   const [recommendedTracks, setRecommendedTracks] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const [audioPlayer, setAudioPlayer] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -47,14 +45,6 @@ const Home = ({ token }) => {
     };
 
     fetchData();
-
-    // Cleanup function to stop audio when component unmounts
-    return () => {
-      if (audioPlayer) {
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;
-      }
-    };
   }, [token]);
 
   const playTrack = (track) => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setIsPlaying, setProgress, setDuration, setCurrentTrack } from '../../store/playerSlice';
+import { setIsPlaying, setCurrentTrack } from '../../store/playerSlice';
 import './Player.scss';
 
 const Player = () => {

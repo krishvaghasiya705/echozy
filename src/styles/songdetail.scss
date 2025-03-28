@@ -1,0 +1,357 @@
+@import "./variables";
+
+.song-detail-page {
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(transparent 0, rgba(0,0,0,.5) 100%);
+  color: #fff;
+
+  .header-gradient {
+    background: linear-gradient(rgba(0,0,0,.6) 0, #121212 100%);
+    padding: 80px 32px 24px;
+  }
+
+  .song-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+
+    .song-cover {
+      width: 232px;
+      height: 232px;
+      object-fit: cover;
+      box-shadow: 0 4px 60px rgba(0,0,0,.5);
+    }
+
+    .song-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      .type-label {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      h1 {
+        font-size: 96px;
+        font-weight: 900;
+        margin: 0.08em 0 0.12em;
+        line-height: 96px;
+      }
+
+      .meta-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #fff;
+        margin-top: 8px;
+
+        img {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+        }
+
+        .artist-name {
+          font-weight: 700;
+          &:hover { text-decoration: underline; }
+        }
+
+        .dot {
+          font-size: 4px;
+          margin: 0 4px;
+        }
+
+        .song-year, .duration {
+          color: rgba(255,255,255,.7);
+        }
+      }
+    }
+  }
+
+  .player-section {
+    padding: 24px 32px;
+    margin-top: 24px;
+
+    .main-controls {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 32px;
+
+      .play-pause-button {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #1ed760;
+        border: none;
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.06);
+          background: #1fdf64;
+        }
+
+        svg {
+          margin-left: 2px; // Center the play icon better
+        }
+      }
+
+      .action-buttons {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+
+        button {
+          background: none;
+          border: none;
+          color: #b3b3b3;
+          cursor: pointer;
+          padding: 8px;
+          transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            color: #fff;
+            transform: scale(1.04);
+          }
+
+          &.like-button:hover {
+            color: #1ed760;
+          }
+        }
+      }
+    }
+
+    .playback-section {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 32px;
+      align-items: center;
+      padding: 16px 24px;
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+      .playback-controls {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        button {
+          background: rgba(255, 255, 255, 0.1);
+          border: none;
+          color: #b3b3b3;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          padding: 8px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            color: #fff;
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+          }
+
+          &.play-button {
+            background: #1ed760;
+            color: #000;
+            padding: 12px;
+            
+            &:hover {
+              background: #1fdf64;
+              transform: scale(1.15);
+              box-shadow: 0 0 20px rgba(30, 215, 96, 0.4);
+            }
+          }
+        }
+      }
+
+      .progress-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+
+        .time {
+          font-size: 12px;
+          font-weight: 500;
+          color: #a7a7a7;
+          min-width: 45px;
+          text-align: center;
+        }
+
+        .progress-bar {
+          flex: 1;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          position: relative;
+          cursor: pointer;
+          transition: height 0.2s ease;
+
+          &:hover {
+            height: 8px;
+            
+            .progress-filled {
+              background-color: #1ed760;
+              
+              &::after {
+                opacity: 1;
+                transform: translate(50%, -50%) scale(1);
+              }
+            }
+          }
+
+          .progress-filled {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: #fff;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+
+            &::after {
+              content: '';
+              position: absolute;
+              right: 0;
+              top: 50%;
+              width: 14px;
+              height: 14px;
+              border-radius: 50%;
+              background: #fff;
+              opacity: 0;
+              transform: translate(50%, -50%) scale(0);
+              transition: all 0.2s ease;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+          }
+
+          input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+            top: 0;
+            left: 0;
+            -webkit-appearance: none;
+            z-index: 2;
+          }
+        }
+      }
+
+      .extra-controls {
+        .volume-control {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 8px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 20px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          button {
+            background: none;
+            border: none;
+            color: #a7a7a7;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.2s ease;
+            
+            &:hover {
+              color: #fff;
+              transform: scale(1.1);
+            }
+          }
+
+          .volume-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            position: relative;
+            transition: all 0.2s ease;
+
+            &::-webkit-slider-runnable-track {
+              height: 4px;
+              border-radius: 2px;
+              -webkit-appearance: none;
+              background: linear-gradient(
+                to right,
+                #1ed760 var(--volume-percentage, 100%),
+                rgba(255, 255, 255, 0.1) var(--volume-percentage, 100%)
+              );
+            }
+
+            &::-moz-range-track {
+              height: 4px;
+              border-radius: 2px;
+              background: linear-gradient(
+                to right,
+                #1ed760 var(--volume-percentage, 100%),
+                rgba(255, 255, 255, 0.1) var(--volume-percentage, 100%)
+              );
+            }
+
+            &::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              width: 12px;
+              height: 12px;
+              border-radius: 50%;
+              background: #fff;
+              cursor: pointer;
+              margin-top: -4px;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              opacity: 0;
+              transition: opacity 0.2s ease;
+            }
+
+            &::-moz-range-thumb {
+              width: 12px;
+              height: 12px;
+              border: none;
+              border-radius: 50%;
+              background: #fff;
+              cursor: pointer;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+              opacity: 0;
+              transition: opacity 0.2s ease;
+            }
+
+            &:hover {
+              &::-webkit-slider-thumb,
+              &::-moz-range-thumb {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,21 +1,15 @@
-import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
-import { configureStore } from '@reduxjs/toolkit';
-import playerReducer from './store/playerSlice';
+import './App.css';
 import router from './module/routes/route';
 import "./styles/global.scss";
-
-const store = configureStore({
-  reducer: {
-    player: playerReducer,
-  },
-});
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
+
   return (
-    <Provider store={store}>
+    <GoogleOAuthProvider clientId="888186814130-doeqguqj4t6lci7503jh9rscmsdtcjtl.apps.googleusercontent.com">
       <RouterProvider router={router} />
-    </Provider>
+    </GoogleOAuthProvider>
   );
 }
 

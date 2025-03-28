@@ -1,0 +1,137 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+
+  &-left {
+    flex: 0 1 auto;
+    .header-logo {
+      h1 {
+        color: #fff;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0;
+      }
+    }
+  }
+
+  &-center {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    max-width: 546px;
+    margin: 0 auto;
+  }
+
+  &-home-button {
+    border-radius: 50%;
+    background-color: #1f1f1f;
+    color: #b3b3b3;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 12px;
+    margin: 0 0 0 12px;
+
+    &:hover {
+      color: #fff;
+      background-color: #282828;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #1f1f1f;
+    padding: 12px 96px 12px 48px;
+    border-radius: 50px;
+    color: #b3b3b3;
+    transition: all 0.2s ease;
+    max-width: 474px;
+    height: 48px;
+    position: relative;
+
+    &-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: 0 12px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        width: 21px;
+        height: 21px;
+      }
+    }
+
+    &:focus-within {
+      color: #fff;
+      background-color: #2a2a2a;
+    }
+
+    input {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 20px;
+      width: 100%;
+      outline: none;
+
+      &::placeholder {
+        color: #b3b3b3;
+      }
+    }
+  }
+
+  &-right {
+    flex: 0 1 auto;
+  }
+
+  &-profile {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #1f1f1f;
+    color: #b3b3b3;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #fff;
+      background-color: #282828;
+    }
+
+    img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+    }
+  }
+}

@@ -1,31 +1,23 @@
 import { createBrowserRouter } from "react-router-dom";
 import DefaultLayout from "./defaultlayout";
 import Home from "../pages/home";
-import Login from "../pages/Login/Login";
-import Callback from "../pages/Callback/Callback";
-import Musicpage from "../pages/music";
-
-const token = localStorage.getItem("spotify_token");
+import Songdetail from "../pages/songdetailedpage";
 
 const router = createBrowserRouter([
-  {
-    path: "/",
-    element: token ? <DefaultLayout /> : <Login />,
-    children: [
-      {
+    {
         path: "/",
-        element: token ? <Home token={token} /> : <Login />,
-      },
-      {
-        path: "/musicpage",
-        element: <Musicpage />,
-      },
-    ],
-  },
-  {
-    path: "/callback",
-    element: <Callback />,
-  },
-]);
+        element: <DefaultLayout />,
+        children: [
+            {
+                path: "/",
+                element: <Home />
+            },
+            {
+                path: "/song/:id",
+                element: <Songdetail />
+            },
+        ]
+    }
+])
 
-export default router;
+export default router

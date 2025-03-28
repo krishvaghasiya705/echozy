@@ -42,17 +42,7 @@ export default function Songdetail() {
         volumeSlider.style.setProperty('--volume-percentage', `${volume * 100}%`);
       }
     }
-  }, []);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      const volumeSlider = document.querySelector('.volume-slider');
-      if (volumeSlider) {
-        volumeSlider.style.setProperty('--volume-percentage', `${volume * 100}%`);
-      }
-    }
-  }, [volume]);
+  }, [audioRef, volume]); // Added volume to dependency array
 
   const togglePlay = () => {
     if (audioRef.current) {

@@ -57,6 +57,7 @@ export default function Home() {
   };
 
   const playSong = (song) => {
+    setCurrentSong(song);
     handleItemClick(song);
   };
 
@@ -128,6 +129,16 @@ export default function Home() {
     const position = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
     e.currentTarget.title = formatDuration(position);
   };
+
+  useEffect(() => {
+    const audioElement = document.querySelector('.audio-player');
+    if (audioElement) {
+      audioElement.addEventListener('timeupdate', handleTimeUpdate);
+      return () => {
+        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+      };
+    }
+  }, []);
 
   const SongCardSkeleton = () => (
     <div className="song-card skeleton-card">

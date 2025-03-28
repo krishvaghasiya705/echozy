@@ -57,8 +57,13 @@
         }
 
         .artist-name {
+          text-decoration: none;
+          color: inherit;
           font-weight: 700;
-          &:hover { text-decoration: underline; }
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
 
         .dot {
@@ -74,6 +79,10 @@
   }
 
   .player-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     padding: 24px 32px;
     margin-top: 24px;
 

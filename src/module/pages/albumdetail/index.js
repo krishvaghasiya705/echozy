@@ -14,16 +14,16 @@ export default function Home() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [songs, setSongs] = useState([]);
-  const [currentSong, setCurrentSong] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalSongs, setTotalSongs] = useState(0);
+  const audioRef = useRef(null);
+  const [currentSong, setCurrentSong] = useState(null); // Add currentSong state
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(1);
   const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [totalSongs, setTotalSongs] = useState(0);
-  const audioRef = useRef(null);
+  const [currentTime] = useState(0);
   const itemsPerPage = 100;
 
   // Load some default songs on mount
@@ -57,6 +57,7 @@ export default function Home() {
   };
 
   const playSong = (song) => {
+    setCurrentSong(song); // Set the current song when playing
     handleItemClick(song);
   };
 
@@ -104,15 +105,6 @@ export default function Home() {
       audioElement.volume = value;
       setVolume(value);
       setIsMuted(value === 0);
-    }
-  };
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const current = audioRef.current.currentTime;
-      const duration = audioRef.current.duration;
-      setProgress((current / duration) * 100);
-      setCurrentTime(current);
     }
   };
 

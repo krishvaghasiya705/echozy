@@ -41,9 +41,103 @@ $skeleton-highlight: rgba($text-primary, 0.1);
 // Main styles
 .music-page {
   padding: 20px;
-  min-height: 100vh;
   background: $background-dark;
   color: $text-primary;
+
+  .featured-section {
+    margin-bottom: 40px;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 20px;
+    }
+
+    .featured-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      img {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        object-fit: cover; // Ensure consistent image display
+        background-color: #282828; // Background while loading
+        transition: opacity 0.3s ease;
+
+        &[src*="placeholder"] {
+          opacity: 0.7; // Style for fallback images
+        }
+      }
+
+      h3 {
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .genres-section {
+    margin-bottom: 40px;
+
+    .genres-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+    }
+
+    .genre-card {
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+
+      svg {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+    }
+  }
+
+  .trending-section {
+    margin-bottom: 40px;
+
+    .trending-card {
+      position: relative;
+
+      .trending-number {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .recent-plays-section {
+    margin-bottom: 40px;
+  }
 }
 
 // Search section
@@ -123,11 +217,15 @@ $skeleton-highlight: rgba($text-primary, 0.1);
   padding: 15px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 
   &:hover {
     background: rgba($text-primary, 0.1);
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    text-decoration: none;
 
     .play-overlay {
       opacity: 1;
@@ -480,4 +578,10 @@ $skeleton-highlight: rgba($text-primary, 0.1);
       background: hsla(0,0%,100%,.2);
     }
   }
+}
+
+.featured-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }

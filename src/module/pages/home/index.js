@@ -1,20 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import ReactPaginate from 'react-paginate';
-import { BsSearch, BsPlayFill, BsPauseFill, BsSkipStartFill, BsSkipEndFill } from 'react-icons/bs';
-import { BiShuffle, BiRepeat } from 'react-icons/bi';
-import { IoMdVolumeHigh, IoMdVolumeOff } from 'react-icons/io';
-import { MdOutlineQueueMusic } from 'react-icons/md';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-import { useNavigate } from 'react-router-dom';
-import "../../../styles/home.scss"
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import ReactPaginate from "react-paginate";
+import {
+  BsPlayFill,
+  BsPauseFill,
+  BsSkipStartFill,
+  BsSkipEndFill,
+} from "react-icons/bs";
+import { BiShuffle, BiRepeat } from "react-icons/bi";
+import { IoMdVolumeHigh, IoMdVolumeOff } from "react-icons/io";
+import { MdOutlineQueueMusic, MdTrendingUp } from "react-icons/md";
+import { FaGuitar } from "react-icons/fa";
+import { GiMicrophone } from "react-icons/gi";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { Link } from "react-router-dom";
+import "../../../styles/home.scss";
 
 export default function Home() {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState('');
   const [songs, setSongs] = useState([]);
-  const [currentSong, setCurrentSong] = useState(null);
+  const [currentSong] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -23,49 +28,115 @@ export default function Home() {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalSongs, setTotalSongs] = useState(0);
+  const [trendingSongs, setTrendingSongs] = useState([]);
+  const [recentPlays, setRecentPlays] = useState([]);
+  const [featuredArtists, setFeaturedArtists] = useState([]);
+  const [genres] = useState([
+    { id: 1, name: "Pop", icon: <GiMicrophone />, color: "#FF4365" },
+    { id: 2, name: "Rock", icon: <FaGuitar />, color: "#45B7D1" },
+    { id: 3, name: "Hip Hop", icon: <GiMicrophone />, color: "#FFB86C" },
+    { id: 4, name: "Dance", icon: <GiMicrophone />, color: "#50FA7B" },
+  ]);
   const audioRef = useRef(null);
   const itemsPerPage = 100;
 
-  // Load some default songs on mount
+  // Load featured/trending songs on mount
   useEffect(() => {
-    searchSongs('latest');
+    const fetchInitialData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          searchSongs("trending"),
+          fetchTrendingSongs(),
+          fetchFeaturedArtists(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchInitialData();
+    loadRecentPlays();
   }, []);
 
   const searchSongs = async (searchQuery) => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://echozy-api.onrender.com/result/?query=${searchQuery}&limit=100`);
-      const allSongs = Array.isArray(response.data) ? response.data : [response.data];
+      const response = await axios.get(
+        `https://echozy-api.onrender.com/result/?query=${searchQuery}&limit=100`
+      );
+      const allSongs = Array.isArray(response.data)
+        ? response.data
+        : [response.data];
       setSongs(allSongs);
       setTotalSongs(allSongs.length);
     } catch (error) {
-      console.error('Error fetching songs:', error);
+      console.error("Error fetching songs:", error);
       setSongs([]);
     }
     setLoading(false);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (query.trim()) {
-      searchSongs(query);
+  const fetchTrendingSongs = async () => {
+    try {
+      const response = await axios.get(
+        "https://echozy-api.onrender.com/result/?query=trending&limit=10"
+      );
+      setTrendingSongs(
+        Array.isArray(response.data) ? response.data : [response.data]
+      );
+    } catch (error) {
+      console.error("Error fetching trending songs:", error);
     }
   };
 
-  const handleItemClick = (song) => {
-    navigate(`/song/${encodeURIComponent(song.perma_url)}`);
+  const fetchFeaturedArtists = async () => {
+    try {
+      const response = await axios.get(
+        "https://echozy-api.onrender.com/result/?query=latest&limit=20"
+      );
+      const artistsData = Array.isArray(response.data)
+        ? response.data
+        : [response.data];
+
+      // Create unique artists map with proper data
+      const artistsMap = new Map();
+      artistsData.forEach((song) => {
+        const artistNames = song.primary_artists.split(", ");
+        const artistIds = song.primary_artists_id.split(", ");
+
+        artistNames.forEach((name, index) => {
+          const artistId = artistIds[index];
+          if (!artistsMap.has(artistId) && artistId) {
+            artistsMap.set(artistId, {
+              id: artistId,
+              name: name,
+              image: song.image,
+              description: "Featured Artist",
+              type: "artist",
+              query: name, // Add artist name as query parameter
+            });
+          }
+        });
+      });
+
+      setFeaturedArtists([...artistsMap.values()].slice(0, 4));
+    } catch (error) {
+      console.error("Error fetching featured artists:", error);
+    }
   };
 
-  const playSong = (song) => {
-    setCurrentSong(song);
-    handleItemClick(song);
+  const loadRecentPlays = () => {
+    const recent = JSON.parse(localStorage.getItem("recentPlays")) || [];
+    setRecentPlays(recent);
   };
 
   const formatDuration = (seconds) => {
-    if (!seconds) return '0:00';
+    if (!seconds) return "0:00";
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const paginatedSongs = songs.slice(
@@ -79,7 +150,7 @@ export default function Home() {
   };
 
   const togglePlay = () => {
-    const audioElement = document.querySelector('.audio-player');
+    const audioElement = audioRef.current;
     if (audioElement) {
       if (isPlaying) {
         audioElement.pause();
@@ -91,7 +162,7 @@ export default function Home() {
   };
 
   const toggleMute = () => {
-    const audioElement = document.querySelector('.audio-player');
+    const audioElement = audioRef.current;
     if (audioElement) {
       audioElement.muted = !isMuted;
       setIsMuted(!isMuted);
@@ -100,7 +171,7 @@ export default function Home() {
 
   const handleVolumeChange = (e) => {
     const value = parseFloat(e.target.value);
-    const audioElement = document.querySelector('.audio-player');
+    const audioElement = audioRef.current;
     if (audioElement) {
       audioElement.volume = value;
       setVolume(value);
@@ -126,19 +197,25 @@ export default function Home() {
   const handleProgressHover = (e) => {
     const progressBar = e.currentTarget;
     const rect = progressBar.getBoundingClientRect();
-    const position = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
+    const position =
+      ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
     e.currentTarget.title = formatDuration(position);
   };
 
   useEffect(() => {
-    const audioElement = document.querySelector('.audio-player');
-    if (audioElement) {
-      audioElement.addEventListener('timeupdate', handleTimeUpdate);
-      return () => {
-        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
-      };
+    if (currentSong?.media_url) {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.src = currentSong.media_url;
+        audio.load();
+        // Store isPlaying in a variable to use in the effect
+        const shouldPlay = isPlaying;
+        if (shouldPlay) {
+          audio.play().catch((err) => console.error("Playback failed:", err));
+        }
+      }
     }
-  }, []);
+  }, [currentSong, isPlaying]); // Add isPlaying to dependencies
 
   const SongCardSkeleton = () => (
     <div className="song-card skeleton-card">
@@ -159,67 +236,164 @@ export default function Home() {
 
   return (
     <div className="music-page">
-      <div className="search-section">
-        <form onSubmit={handleSearch}>
-          <div className="search-wrapper">
-            <BsSearch className="search-icon" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for songs, albums, or artists..."
-              className="search-input"
-            />
-          </div>
-          <button type="submit" className="search-button">
-            Search
-          </button>
-        </form>
-      </div>
+      <h1 className="main-title">Welcome to Echozy</h1>
 
-      {loading ? (
-        <>
-          <h2 className="section-title">Loading songs...</h2>
+      {/* Featured Section */}
+      <section className="featured-section">
+        <h2>
+          <MdTrendingUp /> Featured Artists
+        </h2>
+        <div className="featured-grid">
+          {featuredArtists.map((artist) => (
+            <Link
+              key={artist.id}
+              to={`/artist/${encodeURIComponent(artist.query)}`} // Use artist name instead of ID
+              className="featured-card"
+            >
+              <div>
+                <img src={artist.image} alt={artist.name} loading="lazy" />
+                <h3>{artist.name}</h3>
+                <p>{artist.description}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Genres Section */}
+      <section className="genres-section">
+        <h2>Browse Genres</h2>
+        <div className="genres-grid">
+          {genres.map((genre) => (
+            <div
+              key={genre.id}
+              className="genre-card"
+              style={{ backgroundColor: genre.color }}
+            >
+              {genre.icon}
+              <h3>{genre.name}</h3>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent Plays Section */}
+      {recentPlays.length > 0 && (
+        <section className="recent-plays-section">
+          <h2>Recently Played</h2>
           <div className="songs-container">
-            {Array(itemsPerPage).fill().map((_, index) => (
-              <SongCardSkeleton key={index} />
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <h2 className="section-title">Songs for you</h2>
-          <div className="songs-container">
-            {paginatedSongs.map((song, index) => (
-              <div key={song.id || index} className="song-card" onClick={() => playSong(song)}>
+            {recentPlays.slice(0, 6).map((song, index) => (
+              <Link
+                key={index}
+                to={`/song/${encodeURIComponent(song.perma_url)}`}
+                className="song-card"
+              >
                 <div className="song-image-container">
-                  <img src={song.image} alt={song.song} className="song-image" />
+                  <img
+                    src={song.image}
+                    alt={song.song}
+                    className="song-image"
+                  />
                   <div className="play-overlay">
-                    {currentSong?.id === song.id && isPlaying ? (
-                      <BsPauseFill size={24} />
-                    ) : (
-                      <BsPlayFill size={24} />
-                    )}
+                    <BsPlayFill size={24} />
                   </div>
                 </div>
                 <div className="song-info">
                   <h3 className="song-title">{song.song}</h3>
-                  <p className="song-album">{song.album}</p>
                   <p className="song-artists">{song.primary_artists}</p>
-                  <div className="song-meta">
-                    <span>{formatDuration(song.duration)}</span>
-                    {song.language && <span className="song-language">{song.language}</span>}
-                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
-        </>
+        </section>
       )}
+
+      {/* Trending Section */}
+      <section className="trending-section">
+        <h2>Trending Now</h2>
+        <div className="songs-container">
+          {trendingSongs.map((song, index) => (
+            <Link
+              key={index}
+              to={`/song/${encodeURIComponent(song.perma_url)}`}
+              className="song-card trending-card"
+            >
+              <div className="song-image-container">
+                <img src={song.image} alt={song.song} className="song-image" />
+                <div className="play-overlay">
+                  <BsPlayFill size={24} />
+                </div>
+                <div className="trending-number">#{index + 1}</div>
+              </div>
+              <div className="song-info">
+                <h3 className="song-title">{song.song}</h3>
+                <p className="song-artists">{song.primary_artists}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Original songs section */}
+      <section className="all-songs-section">
+        <h2>All Songs</h2>
+        {loading ? (
+          <>
+            <h2 className="section-title">Loading trending songs...</h2>
+            <div className="songs-container">
+              {Array(itemsPerPage)
+                .fill()
+                .map((_, index) => (
+                  <SongCardSkeleton key={index} />
+                ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="songs-container">
+              {paginatedSongs.map((song, index) => (
+                <Link
+                  key={song.id || index}
+                  to={`/song/${encodeURIComponent(song.perma_url)}`}
+                  className="song-card"
+                >
+                  <div className="song-image-container">
+                    <img
+                      src={song.image}
+                      alt={song.song}
+                      className="song-image"
+                    />
+                    <div className="play-overlay">
+                      {currentSong?.id === song.id && isPlaying ? (
+                        <BsPauseFill size={24} />
+                      ) : (
+                        <BsPlayFill size={24} />
+                      )}
+                    </div>
+                  </div>
+                  <div className="song-info">
+                    <h3 className="song-title">{song.song}</h3>
+                    <p className="song-album">{song.album}</p>
+                    <p className="song-artists">{song.primary_artists}</p>
+                    <div className="song-meta">
+                      <span>{formatDuration(song.duration)}</span>
+                      {song.language && (
+                        <span className="song-language">{song.language}</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+      </section>
 
       {songs.length > 0 && (
         <div className="pagination-info">
-          <p>Showing {paginatedSongs.length} of {totalSongs} songs</p>
+          <p>
+            Showing {paginatedSongs.length} of {totalSongs} songs
+          </p>
           <ReactPaginate
             previousLabel="Previous"
             nextLabel="Next"
@@ -239,7 +413,11 @@ export default function Home() {
       {currentSong && (
         <div className="player-bar">
           <div className="player-left">
-            <img src={currentSong.image} alt={currentSong.song} className="player-image" />
+            <img
+              src={currentSong.image}
+              alt={currentSong.song}
+              className="player-image"
+            />
             <div className="player-info">
               <h4>{currentSong.song}</h4>
               <p>{currentSong.primary_artists}</p>
@@ -254,12 +432,16 @@ export default function Home() {
                 <button className="control-button" title="Previous">
                   <BsSkipStartFill size={20} />
                 </button>
-                <button 
-                  className="control-button play-button" 
+                <button
+                  className="control-button play-button"
                   onClick={togglePlay}
-                  title={isPlaying ? 'Pause' : 'Play'}
+                  title={isPlaying ? "Pause" : "Play"}
                 >
-                  {isPlaying ? <BsPauseFill size={20} /> : <BsPlayFill size={20} />}
+                  {isPlaying ? (
+                    <BsPauseFill size={20} />
+                  ) : (
+                    <BsPlayFill size={20} />
+                  )}
                 </button>
                 <button className="control-button" title="Next">
                   <BsSkipEndFill size={20} />
@@ -282,7 +464,9 @@ export default function Home() {
                     title={formatDuration(currentTime)}
                   />
                 </div>
-                <span className="time">{formatDuration(currentSong.duration)}</span>
+                <span className="time">
+                  {formatDuration(currentSong.duration)}
+                </span>
               </div>
             </div>
           </div>
@@ -290,12 +474,16 @@ export default function Home() {
             <button className="control-button" title="Queue">
               <MdOutlineQueueMusic size={20} />
             </button>
-            <button 
-              className="volume-button" 
+            <button
+              className="volume-button"
               onClick={toggleMute}
-              title={isMuted ? 'Unmute' : 'Mute'}
+              title={isMuted ? "Unmute" : "Mute"}
             >
-              {isMuted ? <IoMdVolumeOff size={20} /> : <IoMdVolumeHigh size={20} />}
+              {isMuted ? (
+                <IoMdVolumeOff size={20} />
+              ) : (
+                <IoMdVolumeHigh size={20} />
+              )}
             </button>
             <input
               type="range"
@@ -310,6 +498,15 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      <audio
+        ref={audioRef}
+        className="audio-player"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
     </div>
   );
 }

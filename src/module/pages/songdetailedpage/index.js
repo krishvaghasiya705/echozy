@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { BsPlayFill, BsPauseFill, BsThreeDots } from 'react-icons/bs';
 import { AiOutlineHeart, AiOutlineDownload } from 'react-icons/ai';
@@ -20,18 +20,47 @@ export default function Songdetail() {
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const fetchSong = async () => {
-      try {
-        const decodedId = decodeURIComponent(id);
-        const response = await axios.get(`https://echozy-api.onrender.com/song/?query=${decodedId}`);
-        setSong(response.data);
-      } catch (error) {
-        console.error('Error fetching song:', error);
-      }
-      setLoading(false);
-    };
-    fetchSong();
+    if (id) {
+      const fetchSong = async () => {
+        try {
+          const decodedId = decodeURIComponent(id);
+          setLoading(true);
+          const response = await axios.get(`https://echozy-api.onrender.com/song/?query=${decodedId}`);
+          setSong(response.data);
+          
+          // Store in recent plays
+          const recentPlays = JSON.parse(localStorage.getItem('recentPlays') || '[]');
+          const updatedRecent = [response.data, ...recentPlays.filter(s => s.id !== response.data.id)].slice(0, 10);
+          localStorage.setItem('recentPlays', JSON.stringify(updatedRecent));
+        } catch (error) {
+          console.error('Error fetching song:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchSong();
+      
+      // Store ref in variable for cleanup
+      const currentAudioRef = audioRef.current;
+      return () => {
+        if (currentAudioRef) {
+          currentAudioRef.pause();
+          currentAudioRef.src = '';
+        }
+      };
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (song?.media_url && audioRef.current) {
+      audioRef.current.src = song.media_url;
+      audioRef.current.load();
+      if (isPlaying) {
+        audioRef.current.play().catch(err => console.error("Playback failed:", err));
+      }
+    }
+  }, [song, isPlaying]);
 
   useEffect(() => {
     // Initialize volume and slider on mount
@@ -105,7 +134,12 @@ export default function Songdetail() {
             <h1>{song.song}</h1>
             <div className="meta-info">
               <img src={song.image} alt={song.primary_artists} />
-              <span className="artist-name">{song.primary_artists}</span>
+              <Link 
+                to={`/artist/${encodeURIComponent(song.primary_artists_id)}`}
+                className="artist-name"
+              >
+                {song.primary_artists}
+              </Link>
               <span className="dot">•</span>
               <span className="song-year">{new Date().getFullYear()}</span>
               <span className="dot">•</span>
@@ -192,7 +226,6 @@ export default function Songdetail() {
 
         <audio
           ref={audioRef}
-          src={song.media_url}
           onTimeUpdate={handleTimeUpdate}
           onEnded={() => setIsPlaying(false)}
           onPlay={() => setIsPlaying(true)}

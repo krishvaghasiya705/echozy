@@ -4,11 +4,13 @@ import { FaSearch } from "react-icons/fa";
 import { AiFillHome } from "react-icons/ai";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "../../assets/icons/logo";
 
-export default function Header() {
+export default function Header({ onSearch }) {
   const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if user data exists in localStorage
@@ -29,6 +31,19 @@ export default function Header() {
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
   return (
     <div className="header">
       <div className="header-left">
@@ -40,14 +55,20 @@ export default function Header() {
       </div>
 
       <div className="header-center">
-        <button className="header-home-button">
+        <NavLink to="/" className="header-home-button">
           <AiFillHome />
-        </button>
+        </NavLink>
         <div className="header-search">
           <div className="header-search-icon">
-            <FaSearch />
+            <FaSearch onClick={handleSearch} />
           </div>
-          <input type="text" placeholder="What do you want to play?" />
+          <input 
+            type="text" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="What do you want to play?" 
+          />
         </div>
       </div>
 

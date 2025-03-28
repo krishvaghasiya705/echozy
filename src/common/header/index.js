@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import "./header.scss"
-import { FaSearch } from 'react-icons/fa'
-import { AiFillHome } from 'react-icons/ai'
-import { GoogleLogin } from '@react-oauth/google'
-import { jwtDecode } from 'jwt-decode'
+import React, { useState, useEffect } from "react";
+import "./header.scss";
+import { FaSearch } from "react-icons/fa";
+import { AiFillHome } from "react-icons/ai";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { NavLink } from "react-router-dom";
+import Logo from "../../assets/icons/logo";
 
 export default function Header() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     // Check if user data exists in localStorage
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
@@ -21,20 +23,22 @@ export default function Header() {
     const userData = {
       name: decoded.name,
       email: decoded.email,
-      picture: decoded.picture
+      picture: decoded.picture,
     };
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   return (
     <div className="header">
       <div className="header-left">
         <div className="header-logo">
-          <h1>Echozy</h1>
+          <NavLink to={"/"}>
+            <Logo />
+          </NavLink>
         </div>
       </div>
-      
+
       <div className="header-center">
         <button className="header-home-button">
           <AiFillHome />
@@ -55,11 +59,11 @@ export default function Header() {
         ) : (
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
-            onError={() => console.log('Login Failed')}
+            onError={() => console.log("Login Failed")}
             useOneTap
           />
         )}
       </div>
     </div>
-  )
+  );
 }
